@@ -23,7 +23,10 @@ def test_url(session, host, referer):
     print('[+] Testing {}, {}'.format(host, test_id))
 
     # send the request, check the status
-    url = 'http://' + host
+    if args.ssl:
+        url = 'https://' + host
+    else:
+        url = 'http://' + host
     response = session.get(url, headers=headers)
     data = response.text
     if response.status_code != 200:
@@ -42,6 +45,7 @@ async def run_ansync():
 
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
         with requests.Session() as session:
+            session.keep_alive = False
             loop = asyncio.get_event_loop()
             tasks = [
                 loop.run_in_executor(
@@ -71,6 +75,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--list', help='Specify list of targets')
     parser.add_argument('-w', '--workers', type=int, default=10, help='Max number of concurrent workers (default 10)')
     parser.add_argument('-r', '--referer', help='url of referrer (ex: pwned.com)')
+    parser.add_argument('-s', '--ssl', action='store_true', default=False, help='use https instead of http')
     args = parser.parse_args()
 
     main()
