@@ -1,6 +1,8 @@
 # HeadCannon
 
-HeadCannon performs highly-parallel testing of various HTTP header-based vulnerabilities against a large number of targets. I made it because MWR Labs never released reson8, and PortSwigger's Collaborator-Everywhere requires Burp Suite Pro. It currently is as feature-rich and is basically a PoC at this point, but hey, you get what you pay for, so **it is provided as-is** and you are responsible for how you leverage this tool. I put this together over a pot of coffee on a Saturday morning, so it probably sucks in a number of ways that I'm not even aware of. **ACT RESPONSIBLY**
+HeadCannon performs highly-parallel testing of various HTTP header-based vulnerabilities against a large number of targets. 
+
+I made it because MWR Labs never released reson8, and PortSwigger's Collaborator-Everywhere requires Burp Suite Pro. It currently isn't as feature-rich and is basically a PoC at this point, but hey, you get what you pay for, so **it is provided as-is** and you are responsible for how you leverage this tool. I put this together over a pot of coffee on a Saturday morning, so it probably sucks in a number of ways that I'm not even aware of. **ACT RESPONSIBLY**
 
 ## Installation
 
@@ -26,9 +28,9 @@ HeadCannon performs highly-parallel testing of various HTTP header-based vulnera
 
 Example command arguments:
 
-`python3 headcannon.py -l examples/target_list.txt -w 5 -r pwn.yourdomain.com`
+`./headcannon.py -l examples/target_list.txt -w 5 -r pwn.yourdomain.com`
 
-Note that some vulnerabilities do not manifest as real-time responses to your testing. You'll get some responses minutes, hours, or even days later. In order to help map responses you receive to the test you performed, each request is assigned a UUID. I have yet to implement proper logging, so you might want to pipe the output to a file for future reference.
+**Note**: some vulnerabilities do not manifest as real-time responses to your testing. You'll get some responses minutes, hours, or even days later. In order to help map responses you receive to the test you performed, each request is assigned a UUID. I have yet to implement proper logging, so you might want to pipe the output to a file for future reference.
 
 
 ## Contributions
