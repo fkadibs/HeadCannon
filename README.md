@@ -34,9 +34,10 @@ I made it because MWR Labs never released reson8, and PortSwigger's Collaborator
 2. Add two subdomain DNS records to yourdomain.com:
     * `ns1` - an A record pointing to your static server IP
     * `pwn` - an NS record pointing to `ns1.yourdomain.com`. You can name this anything.
-3. SSH as root into your public server monitor DNS queries with `tcpdump port 53`
-4. In a separate terminal, test your setup with `dig +short ns1.yourdomain.com` and `dig +short test.pwn.yourdomain.com`
-5. The first `dig` should show the IP of your public server. The second `dig` should timeout but if you see the DNS query in your `tcpdump`, you are ready for testing.
+3. Have a pint while you wait for your DNS records to propagate.
+4. SSH as root into your public server monitor DNS queries with `tcpdump port 53`
+5. In a separate terminal, test your setup with `dig +short ns1.yourdomain.com` and `dig +short test.pwn.yourdomain.com`
+6. The first `dig` should show the IP of your public server. The second `dig` should timeout but if you see the DNS query in your `tcpdump`, you are ready for testing.
 
 ## Usage
 
