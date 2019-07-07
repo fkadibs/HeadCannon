@@ -1,6 +1,19 @@
 # HeadCannon
 
-HeadCannon performs highly-parallel testing of various HTTP header-based vulnerabilities against a large number of targets. 
+HeadCannon performs highly-parallel testing of various HTTP header-based vulnerabilities against a large number of targets. It helps developers and security engineers identify unexpected behavior with the following HTTP headers:
+
+* `X-Forwarded-For`
+* `True-Client-IP`
+* `X-WAP-Profile`
+* `Referer`
+
+Under certain conditions, improper handling of these headers can result is certain vulnerabilities:
+
+* DNS rebinding attacks
+* XML parsing vulnerabilites
+* SSRF attacks
+* IP spoofing attacks
+* Stored XSS via pre-emptive caching
 
 I made it because MWR Labs never released reson8, and PortSwigger's Collaborator-Everywhere requires Burp Suite Pro. It currently isn't as feature-rich and is basically a PoC at this point, but hey, you get what you pay for, so **it is provided as-is** and you are responsible for how you leverage this tool. I put this together over a pot of coffee on a Saturday morning, so it probably sucks in a number of ways that I'm not even aware of. **ACT RESPONSIBLY**
 
@@ -17,12 +30,13 @@ I made it because MWR Labs never released reson8, and PortSwigger's Collaborator
 
 ## Getting Started
 
-1. Set up a public server with a static ip
-2. Add two DNS records to yourdomain.com:
-    * `ns1` - an A record pointing to your static server ip
-    * `pwn` - an NS record pointing to `ns1.yourdomain.com`
-3. SSH at root into your public server monitor DNS with `tcpdump -n port 53`
+1. Set up a public server with a static IP
+2. Add two subdomain DNS records to yourdomain.com:
+    * `ns1` - an A record pointing to your static server IP
+    * `pwn` - an NS record pointing to `ns1.yourdomain.com`. You can name this anything.
+3. SSH as root into your public server monitor DNS queries with `tcpdump port 53`
 4. In a separate terminal, test your setup with `dig +short ns1.yourdomain.com` and `dig +short test.pwn.yourdomain.com`
+5. The first `dig` should show the IP of your public server. The second `dig` should timeout but if you see the DNS query in your `tcpdump`, you are ready for testing.
 
 ## Usage
 
@@ -30,19 +44,18 @@ Bare minimum requires a target domain and attacker host:
 
 `./headcannon.py --domain google.com --attacker pwn.yourdomain.com`
 
-When running a list of domains/subdomains, you can fine-tune the number of concurrent workers, timeout, and retries:
+When using a long list of targets, you can fine-tune the number of concurrent workers, timeout, and retries:
 
-`./headcannon.py --list examples/target_list.txt --atacker pwn.yourdomain.com --workers 10  --timeout 3 --retries 1`
-`./headcannon.py -l examples/target_list.txt -a pwn.yourdomain.com -w 20  -t 3 -r 1`
+`./headcannon.py --list examples/tesla.com.txt --atacker pwn.yourdomain.com --workers 10  --timeout 3 --retries 1`
+`./headcannon.py -l examples/tesla.com.txt -a pwn.yourdomain.com -w 20  -t 3 -r 1`
 
-You can also send it through Burp if you want to monitor/log the traffic:
+You can also send it through a proxy if you want to intercept/monitor/log the traffic:
 
 `./headcannon.py --list examples/target_list.txt --attacker pwn.yourdomain.com --proxy 127.0.0.1:8080`
 
-**Note**: some vulnerabilities do not manifest as real-time responses to your testing. You'll get some responses minutes, hours, or even days later. In order to help map responses you receive to the test you performed, each request is assigned a UUID. I have yet to implement proper logging, so you might want to pipe the output to a file for future reference.
+**Note**: some vulnerabilities do not manifest as real-time responses to your testing. You'll get some responses minutes, hours, or even days later. I have yet to implement persistent logging, so you might want to pipe the output to a file for future reference.
 
 
 ## Contributions
 
 If you have any ideas for bugfixes or enhancements, feel free to open an issue or submit a pull request.
-
