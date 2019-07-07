@@ -26,9 +26,14 @@ I made it because MWR Labs never released reson8, and PortSwigger's Collaborator
 
 ## Usage
 
-Example command arguments:
+Bare minimum requires a target domain and attacker host:
 
-`./headcannon.py -l examples/target_list.txt -w 5 -r pwn.yourdomain.com`
+`./headcannon.py --domain google.com --attacker pwn.yourdomain.com
+
+When running a list of domains/subdomains, you can fine-tune the number of concurrent workers, timeout, and retries:
+
+`./headcannon.py --list examples/target_list.txt --workers 10 --atacker pwn.yourdomain.com --timeout 3 --retries 1'
+`./headcannon.py -l examples/target_list.txt -w 20 -a pwn.yourdomain.com -t 3 -r 1'
 
 **Note**: some vulnerabilities do not manifest as real-time responses to your testing. You'll get some responses minutes, hours, or even days later. In order to help map responses you receive to the test you performed, each request is assigned a UUID. I have yet to implement proper logging, so you might want to pipe the output to a file for future reference.
 
