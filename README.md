@@ -41,7 +41,7 @@ I made it because MWR Labs never released reson8, and PortSwigger's Collaborator
 
 ## Usage
 
-    usage: headcannon.py [-h] [-d] [-l] [-w] -a  [-s] [-t] [-r] [-p] [-v]
+    usage: headcannon.py [-h] (-d  | -l ) [-w] -a  [-s] [-t] [-r] [-p] [-v]
 
     HTTP Header Tester idk
 
