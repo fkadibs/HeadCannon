@@ -49,8 +49,8 @@ I made it because MWR Labs never released reson8, and PortSwigger's Collaborator
     -h, --help        show this help message and exit
     -d , --domain     Domain to target
     -l , --list       Specify list of domains to targets
-    -w , --workers    Max number of concurrent workers (default 10)
     -a , --attacker   url of referrer (ex: pwned.com)
+    -w , --workers    Max number of concurrent workers (default 10)
     -s, --ssl         use https instead of http
     -t , --timeout    Specify request timeout (default 5 sec)
     -r , --retries    Specify max retries (default 5)
