@@ -41,7 +41,7 @@ I made it because MWR Labs never released reson8, and PortSwigger's Collaborator
 
 ## Usage
 
-    usage: headcannon.py [-h] (-d  | -l ) [-w] -a  [-s] [-t] [-r] [-p] [-v]
+    usage: headcannon.py [-h] (-d  | -l ) -a  [-w] [-s] [-t] [-r] [-p] [-v]
 
     HTTP Header Tester idk
 
@@ -56,7 +56,7 @@ I made it because MWR Labs never released reson8, and PortSwigger's Collaborator
     -r , --retries    Specify max retries (default 5)
     -p , --proxy      Specify proxy (127.0.0.1:8080 or user:pass@127.0.0.1:8080)
     -v, --verbose     Enable verbose output
-
+    
 Bare minimum requires a target domain and attacker host:
 
 `./headcannon.py --domain google.com --attacker pwn.yourdomain.com`
