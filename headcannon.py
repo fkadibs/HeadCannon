@@ -143,8 +143,9 @@ if __name__ == '__main__':
         exit(0)
 
     parser = argparse.ArgumentParser(description="HTTP Header Tester idk")
-    parser.add_argument('-d', '--domain', metavar='', help='Domain to target')
-    parser.add_argument('-l', '--list', metavar='', help='Specify list of domains to targets')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-d', '--domain', metavar='', help='Domain to target')
+    group.add_argument('-l', '--list', metavar='', help='Specify list of domains to targets')
     parser.add_argument('-w', '--workers', type=int, metavar='', default=10, help='Max number of concurrent workers (default 10)')
     parser.add_argument('-a', '--attacker', required=True, metavar='', help='url of referrer (ex: pwned.com)')
     parser.add_argument('-s', '--ssl', action='store_true', default=False, help='use https instead of http')
