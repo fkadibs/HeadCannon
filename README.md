@@ -48,6 +48,7 @@ Bare minimum requires a target domain and attacker host:
 When using a long list of targets, you can fine-tune the number of concurrent workers, timeout, and retries:
 
 `./headcannon.py --list examples/tesla.com.txt --atacker pwn.yourdomain.com --workers 10  --timeout 3 --retries 1`
+
 `./headcannon.py -l examples/tesla.com.txt -a pwn.yourdomain.com -w 20  -t 3 -r 1`
 
 You can also send it through a proxy if you want to intercept/monitor/log the traffic:
