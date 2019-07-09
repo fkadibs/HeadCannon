@@ -56,10 +56,12 @@ I made it because MWR Labs never released reson8, and PortSwigger's Collaborator
     -r , --retries    Specify max retries (default 5)
     -p , --proxy      Specify proxy (127.0.0.1:8080 or user:pass@127.0.0.1:8080)
     -v, --verbose     Enable verbose output
-    
+
 Bare minimum requires a target domain and attacker host:
 
 `./headcannon.py --domain google.com --attacker pwn.yourdomain.com`
+
+### Fine-tuning
 
 When using a long list of targets, you can fine-tune the number of concurrent workers, timeout, and retries:
 
@@ -67,11 +69,17 @@ When using a long list of targets, you can fine-tune the number of concurrent wo
 
 `./headcannon.py -l examples/tesla.com.txt -a pwn.yourdomain.com -w 20  -t 3 -r 1`
 
+### Proxy
+
 You can also send it through a proxy if you want to intercept/monitor/log the traffic:
 
 `./headcannon.py --list examples/target_list.txt --attacker pwn.yourdomain.com --proxy 127.0.0.1:8080`
 
-**Note**: some vulnerabilities do not manifest as real-time responses to your testing. You'll get some responses minutes, hours, or even days later. I have yet to implement persistent logging, so you might want to pipe the output to a file for future reference.
+## Notes
+
+* Some vulnerabilities do not manifest as real-time responses to your testing. You'll get some responses minutes, hours, or even days later. After you run HeadCannon, you'll want to leave your DNS sniffer running for a while and check on it periodically.
+
+* I have yet to implement persistent logging, so it is a good idea to pipe the output to a file for future reference.
 
 
 ## Contributions
