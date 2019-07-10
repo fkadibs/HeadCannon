@@ -41,21 +41,23 @@ I made it because MWR Labs never released reson8, and PortSwigger's Collaborator
 
 ## Usage
 
-    usage: headcannon.py [-h] (-d  | -l ) -a  [-w] [-s] [-t] [-r] [-p] [-v]
+```
+usage: headcannon.py [-h] (-d  | -l ) -a  [-w] [-s] [-t] [-r] [-p] [-v]
 
-    HTTP Header Tester idk
+HTTP Header Tester idk
 
-    optional arguments:
-    -h, --help        show this help message and exit
-    -d , --domain     Domain to target
-    -l , --list       Specify list of domains to targets
-    -a , --attacker   url of referrer (ex: pwned.com)
-    -w , --workers    Max number of concurrent workers (default 10)
-    -s, --ssl         use https instead of http
-    -t , --timeout    Specify request timeout (default 5 sec)
-    -r , --retries    Specify max retries (default 5)
-    -p , --proxy      Specify proxy (127.0.0.1:8080 or user:pass@127.0.0.1:8080)
-    -v, --verbose     Enable verbose output
+optional arguments:
+  -h, --help        show this help message and exit
+  -d , --domain     Domain to target
+  -l , --list       Specify list of domains to targets
+  -a , --attacker   Url of referrer (ex: pwned.com)
+  -w , --workers    Max number of concurrent workers (default 10)
+  -s, --ssl         Use https instead of http
+  -t , --timeout    Specify request timeout (default 5 sec)
+  -r , --retries    Specify max retries (default 5)
+  -p , --proxy      Specify proxy (127.0.0.1:8080 or user:pass@127.0.0.1:8080)
+  -v, --verbose     Enable verbose output
+```
 
 Bare minimum requires a target domain and attacker host:
 
